@@ -1,0 +1,124 @@
+.main-layout {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    gap: 20px;
+    height: 100vh;
+    padding: 20px 24px 24px 24px;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.sidebar-left {
+    /* background: var(--card-bg); */
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    /* padding: 20px; */
+    height: fit-content;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.main-content {
+    
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    padding: 8px 6px 4px 4px;
+    max-height: calc(100vh - 48px);
+    scrollbar-gutter: stable;
+    
+}
+
+
+.main-content::-webkit-scrollbar {
+    width: 6px;
+    background: transparent;
+}
+
+.main-content:hover::-webkit-scrollbar {
+    width: 6px;
+    background: transparent;
+}
+
+.main-content:hover::-webkit-scrollbar-track {
+    width: 6px;
+    background: transparent;
+}
+
+.main-content:hover::-webkit-scrollbar-thumb {
+    background: rgba(8, 184, 130, 0.8);
+    border-radius: 3px;
+}
+
+.main-content:hover::-webkit-scrollbar-thumb:hover {
+    width: 6px;
+    background: rgba(6, 163, 116, 0.9);
+}
+
+
+
+.main-layout {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    gap: 20px;
+    height: 100vh;
+    padding: 20px 24px 24px 24px;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+
+@media (max-width: 1400px) {
+    .main-layout {
+        grid-template-columns: 280px 1fr;
+        gap: 16px;
+        padding: 16px 20px 20px 20px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .main-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px 20px 20px 20px;
+    }
+
+    .sidebar-left {
+        display: none;
+    }
+}
+
+
+
+
+.sidebar-container::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+.sidebar-container:hover::-webkit-scrollbar {
+    width: 6px;
+    background: transparent;
+}
+
+.sidebar-container:hover::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-container:hover::-webkit-scrollbar-thumb {
+    background: rgba(8, 184, 130, 0.8);
+    border-radius: 3px;
+}
+
+.sidebar-container:hover::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 163, 116, 0.9);
+}
+
+/* Ensure scrollbar doesn't take up layout space */
+.sidebar-container {
+    scrollbar-gutter: stable;
+}

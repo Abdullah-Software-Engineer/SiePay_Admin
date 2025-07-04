@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "gellix";
+  src: url("/fonts/Gellix/Gellix-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+
+@layer base {
+  .container-wrapper {
+    @apply mx-auto w-[90%] max-w-[1200px];
+  }
+}
+
+
+@theme {
+  /* general font setting */
+  --font-dashboardmenu: "gellix", sans-serif;
+
+  --font-gellix: "gellix", sans-serif;
+
+  --font-mainheading: "helvetica-neue-medium", sans-serif;
+  --font-heading: "helvetica-neue", sans-serif;
+  --font-navmenu: "helvetica-neue", sans-serif;
+  --font-button: "helvetica-neue", sans-serif;
+  --font-paragraph: "poppins-regular", sans-serif;
+  --font-paragraph-light: "poppins-light", sans-serif;
+  --font-subheading: "helixa-bold", sans-serif;
+  --font-helixa-Regular: "helixa-regular", sans-serif;
+
+  /* general color setting */
+  /* --color-grayCard-primary: #5f5f5f;
+
+  --color-green-primary: #95c20a;
+
+  --color-gray-primary: #5f5f5f;
+  --color-gray-secondary: #757377;
+  --color-gray-footer: #FAFAFA;
+
+  --radius-card: 16px; */
+}
+
+body {
+  background-color: #001939;
+  font-family: "gellix", sans-serif;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+
