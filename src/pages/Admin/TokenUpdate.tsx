@@ -13,6 +13,7 @@ const mockMerchants: User[] = [
     role: 'merchant',
     flow: 'master',
     createdAt: '2024-01-15T00:00:00.000Z',
+    totalTokens: 5000,
   },
   {
     _id: '2',
@@ -23,6 +24,7 @@ const mockMerchants: User[] = [
     role: 'merchant',
     flow: 'forwarder',
     createdAt: '2024-01-20T00:00:00.000Z',
+    totalTokens: 3200,
   },
   {
     _id: '3',
@@ -33,6 +35,7 @@ const mockMerchants: User[] = [
     role: 'merchant',
     flow: 'master',
     createdAt: '2024-02-01T00:00:00.000Z',
+    totalTokens: 7500,
   },
 ];
 

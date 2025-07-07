@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Calendar, Shield, Settings, Store } from 'lucide-react';
-import type { User as UserType, MerchantUpdateType } from '../../types';
+import type { User as UserType } from '../../types';
 
 // Mock data updated to reflect real user structure
 const mockMerchant: UserType = {
@@ -13,24 +13,19 @@ const mockMerchant: UserType = {
   role: 'merchant',
   flow: 'master',
   createdAt: '2024-01-15T00:00:00.000Z',
+  totalTokens: 5000,
 };
 
 const MerchantDetail = () => {
-  const { merchantId } = useParams();
   const navigate = useNavigate();
   const [merchant, setMerchant] = useState<UserType>(mockMerchant);
-  const [isEditing, setIsEditing] = useState(false);
 
   const handleUpdateStatus = () => {
     setMerchant(prev => ({ ...prev, status: !prev.status }));
-    // This would be an API call to update merchant status
-    console.log('Update status for merchant:', merchantId);
   };
 
   const handleUpdateFlow = (newFlow: 'master' | 'forwarder') => {
     setMerchant(prev => ({ ...prev, flow: newFlow }));
-    // This would be an API call to update merchant flow
-    console.log('Update flow for merchant:', merchantId, newFlow);
   };
 
   return (
@@ -69,21 +64,19 @@ const MerchantDetail = () => {
             </div>
             <div className="flex items-center space-x-2">
               <span
-                className={`px-3 py-1 text-sm font-semibold rounded-full ${
-                  merchant.status
+                className={`px-3 py-1 text-sm font-semibold rounded-full ${merchant.status
                     ? 'bg-green-100 text-green-800'
                     : 'bg-red-100 text-red-800'
-                }`}
+                  }`}
               >
                 {merchant.status ? 'Active' : 'Inactive'}
               </span>
               {merchant.flow && (
                 <span
-                  className={`px-3 py-1 text-sm font-semibold rounded-full ${
-                    merchant.flow === 'master'
+                  className={`px-3 py-1 text-sm font-semibold rounded-full ${merchant.flow === 'master'
                       ? 'bg-blue-100 text-blue-800'
                       : 'bg-yellow-100 text-yellow-800'
-                  }`}
+                    }`}
                 >
                   {merchant.flow.charAt(0).toUpperCase() + merchant.flow.slice(1)} Flow
                 </span>
@@ -100,7 +93,7 @@ const MerchantDetail = () => {
                   <p className="text-gray-900">{merchant.email}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 <User className="h-5 w-5 text-gray-400 mr-3" />
                 <div>
@@ -165,11 +158,10 @@ const MerchantDetail = () => {
               </div>
               <button
                 onClick={handleUpdateStatus}
-                className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                  merchant.status
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${merchant.status
                     ? 'bg-red-100 text-red-700 hover:bg-red-200'
                     : 'bg-green-100 text-green-700 hover:bg-green-200'
-                }`}
+                  }`}
               >
                 {merchant.status ? 'Deactivate' : 'Activate'}
               </button>
@@ -185,22 +177,20 @@ const MerchantDetail = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleUpdateFlow('master')}
-                  className={`px-3 py-1 text-sm font-medium rounded ${
-                    merchant.flow === 'master'
+                  className={`px-3 py-1 text-sm font-medium rounded ${merchant.flow === 'master'
                       ? 'bg-blue-100 text-blue-700'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                   disabled={merchant.flow === 'master'}
                 >
                   Master
                 </button>
                 <button
                   onClick={() => handleUpdateFlow('forwarder')}
-                  className={`px-3 py-1 text-sm font-medium rounded ${
-                    merchant.flow === 'forwarder'
+                  className={`px-3 py-1 text-sm font-medium rounded ${merchant.flow === 'forwarder'
                       ? 'bg-yellow-100 text-yellow-700'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                   disabled={merchant.flow === 'forwarder'}
                 >
                   Forwarder

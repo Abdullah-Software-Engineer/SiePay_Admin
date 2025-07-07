@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Eye, Power, Store, AlertCircle, User as UserIcon } from 'lucide-react';
 import { useGetMerchants } from '../../api/queries/useGetMerchants';
 import { useGetUser } from '../../api/queries/useGetUser';
-import useAuth from '../../hook/useAuth';
 
 const MerchantList = () => {
   // Use the real API hook
   const { data: merchants, isLoading, error } = useGetMerchants();
   const { data: currentUser } = useGetUser();
-  const { token } = useAuth();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');

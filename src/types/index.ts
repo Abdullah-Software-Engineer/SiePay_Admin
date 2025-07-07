@@ -1,4 +1,5 @@
 export type User = {
+  totalTokens: any;
   _id: string;
   email: string;
   username: string;
