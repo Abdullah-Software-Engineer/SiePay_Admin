@@ -15,8 +15,13 @@ const MerchantList = () => {
   const navigate = useNavigate();
 
   const filteredMerchants = (merchants || []).filter(merchant => {
+    // Safety check for merchant object
+    if (!merchant || typeof merchant !== 'object') {
+      return false;
+    }
+    
     const matchesSearch = merchant.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         merchant.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         merchant.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          merchant.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || 
                          (statusFilter === 'active' && merchant.status) ||
@@ -37,8 +42,41 @@ const MerchantList = () => {
 
   if (isLoading) {
     return (
-      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
-        <div className="text-lg text-gray-600">Loading merchants...</div>
+      <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Skeleton */}
+          <div className="mb-6">
+            <div className="h-8 bg-gray-200 rounded-md w-64 mb-2 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded-md w-96 animate-pulse"></div>
+          </div>
+
+          {/* Filters Skeleton */}
+          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+            </div>
+          </div>
+
+          {/* Table Skeleton */}
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="p-6">
+              <div className="text-center">
+                <div className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm text-gray-500">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Loading merchant data...
+                </div>
+                <div className="text-sm text-gray-400 mt-2">
+                  This may take a few moments
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -53,20 +91,59 @@ const MerchantList = () => {
               <h2 className="text-lg font-semibold text-red-800">Error loading merchants</h2>
             </div>
             <div className="text-red-700 mb-4">
-              {error.message || 'Please try again'}
+              {error.message || 'An unexpected error occurred. Please try again.'}
             </div>
+            
+            {/* Show additional help based on error type */}
+            {error.message?.includes('unauthorized') || error.message?.includes('Access denied') ? (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
+                <div className="text-yellow-800">
+                  <strong>Authentication Required:</strong> You need to be logged in as an admin to access this page.
+                  <br />
+                  <span className="text-sm">Please logout and login again with admin credentials.</span>
+                </div>
+              </div>
+            ) : error.message?.includes('Network') ? (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                <div className="text-blue-800">
+                  <strong>Connection Issue:</strong> Please check your internet connection and try again.
+                </div>
+              </div>
+            ) : error.message?.includes('Session expired') ? (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mt-4">
+                <div className="text-orange-800">
+                  <strong>Session Expired:</strong> Your login session has expired. Please login again.
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+                <div className="text-gray-700 text-sm">
+                  If this problem persists, please contact support with the error details above.
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-600 mb-4">
-              To access the merchant management page, you need to be logged in as an admin user.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Retry
-            </button>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Retry
+              </button>
+              {(error.message?.includes('unauthorized') || error.message?.includes('Session expired')) && (
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                  }}
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Go to Login
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -166,16 +243,16 @@ const MerchantList = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredMerchants.map((merchant) => (
-                  <tr key={merchant._id} className="hover:bg-gray-50">
+                  <tr key={merchant._id || Math.random()} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="flex items-center gap-2">
                           <div className="text-sm font-medium text-gray-900">
-                            {merchant.username || merchant.name || 'N/A'}
+                            {merchant.username || merchant.name || merchant.email || 'N/A'}
                           </div>
                           <Store className="h-4 w-4 text-gray-400" />
                         </div>
-                        <div className="text-sm text-gray-500">{merchant.email}</div>
+                        <div className="text-sm text-gray-500">{merchant.email || 'No email'}</div>
                         {merchant.name && merchant.name !== merchant.username && (
                           <div className="text-xs text-gray-400">{merchant.name}</div>
                         )}
@@ -221,6 +298,7 @@ const MerchantList = () => {
                           onClick={() => handleViewDetails(merchant._id)}
                           className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                           title="View Details"
+                          disabled={!merchant._id}
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -228,6 +306,7 @@ const MerchantList = () => {
                           onClick={() => toggleMerchantStatus(merchant._id)}
                           className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
                           title="Toggle Status"
+                          disabled={!merchant._id}
                         >
                           <Power className="h-4 w-4" />
                         </button>

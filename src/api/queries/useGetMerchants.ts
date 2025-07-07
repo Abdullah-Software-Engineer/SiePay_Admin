@@ -9,30 +9,41 @@ export const useGetMerchants = () => {
     let query = useQuery<User[]>({
         queryKey: ["merchants"],
         queryFn: async () => {
-            try {
+            const response = await api.get('/admin/users', {}, true);
             
-                const response = await api.get('/admin/users', {}, true);
-                const users = response.data || response;
-                
-                // Filter to only get users with role 'merchant'
-                const merchants = users.filter((user: User) => user.role === 'merchant');
-                
-                return merchants;
-            } catch (error) {
-                console.error('Error fetching merchants:', error);
-                throw error;
+            // Handle different response structures
+            let users: User[] = [];
+            
+            if (Array.isArray(response)) {
+                users = response;
+            } else if (response?.data && Array.isArray(response.data)) {
+                users = response.data;
+            } else if (response?.users && Array.isArray(response.users)) {
+                users = response.users;
+            } else if (response && typeof response === 'object') {
+                const arrayProp = Object.values(response).find(val => Array.isArray(val));
+                if (arrayProp) {
+                    users = arrayProp as User[];
+                }
             }
-        },
-        enabled: !!token, // Only run the query if there's a token
-        retry: (failureCount, error: any) => {
-            console.log('Retry attempt:', failureCount, 'Error:', error);
-            // Don't retry on authentication errors
-            if (error?.message?.includes('401') || error?.message?.includes('403') || error?.message?.includes('Session expired')) {
-                console.log('Authentication error, not retrying');
-                return false;
+            
+            if (!Array.isArray(users)) {
+                console.warn('Unexpected response format:', response);
+                return [];
             }
-            return failureCount < 3;
+            
+            const merchants = users.filter((user: User) => {
+                const role = user.role?.toLowerCase();
+                return role === 'merchant' || role === 'user' || !role;
+            });
+            
+            return merchants;
         },
+        enabled: !!token,
+        retry: 1,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        gcTime: 1000 * 60 * 10, // 10 minutes
     });
+    
     return query;
 };
