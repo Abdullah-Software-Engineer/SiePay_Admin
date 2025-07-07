@@ -1,17 +1,21 @@
 import  { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Eye, Power, Store, AlertCircle, User as UserIcon } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useGetMerchants } from '../../api/queries/useGetMerchants';
 import { useGetUser } from '../../api/queries/useGetUser';
+import { useUpdateMerchant } from '../../api/mutations/useUpdateMerchant';
 
 const MerchantList = () => {
   // Use the real API hook
   const { data: merchants, isLoading, error } = useGetMerchants();
   const { data: currentUser } = useGetUser();
+  const updateMerchantMutation = useUpdateMerchant();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [flowFilter, setFlowFilter] = useState<'all' | 'master' | 'forwarder'>('all');
+  const [togglingStatus, setTogglingStatus] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const filteredMerchants = (merchants || []).filter(merchant => {
@@ -35,9 +39,26 @@ const MerchantList = () => {
     navigate(`/dashboard/admin/merchants/${merchantId}`);
   };
 
-  const toggleMerchantStatus = (merchantId: string) => {
-    // This would be an API call to update merchant status
-    console.log('Toggle status for merchant:', merchantId);
+  const toggleMerchantStatus = async (merchantId: string, currentStatus: boolean) => {
+    if (!merchantId) {
+      toast.error('Invalid merchant ID');
+      return;
+    }
+
+    setTogglingStatus(merchantId);
+    
+    try {
+      await updateMerchantMutation.mutateAsync({
+        merchantId,
+        status: !currentStatus
+      });
+      toast.success(`Merchant ${!currentStatus ? 'activated' : 'deactivated'} successfully`);
+    } catch (error: any) {
+      console.error('Error toggling merchant status:', error);
+      toast.error(error?.message || 'Failed to update merchant status');
+    } finally {
+      setTogglingStatus(null);
+    }
   };
 
   if (isLoading) {
@@ -303,12 +324,23 @@ const MerchantList = () => {
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => toggleMerchantStatus(merchant._id)}
-                          className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
-                          title="Toggle Status"
-                          disabled={!merchant._id}
+                          onClick={() => toggleMerchantStatus(merchant._id, merchant.status || false)}
+                          className={`p-1 rounded transition-colors ${
+                            togglingStatus === merchant._id
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                          }`}
+                          title={togglingStatus === merchant._id ? 'Updating...' : 'Toggle Status'}
+                          disabled={!merchant._id || togglingStatus === merchant._id}
                         >
-                          <Power className="h-4 w-4" />
+                          {togglingStatus === merchant._id ? (
+                            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          ) : (
+                            <Power className="h-4 w-4" />
+                          )}
                         </button>
                       </div>
                     </td>
