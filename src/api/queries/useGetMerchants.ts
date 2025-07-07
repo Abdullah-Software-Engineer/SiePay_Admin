@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "../api-client";
 import type { User } from "../../types";
 import useAuth from "../../hook/useAuth";
 
@@ -9,35 +8,34 @@ export const useGetMerchants = () => {
     let query = useQuery<User[]>({
         queryKey: ["merchants"],
         queryFn: async () => {
-            const response = await api.get('/admin/users', {}, true);
-            
-            // Handle different response structures
-            let users: User[] = [];
-            
-            if (Array.isArray(response)) {
-                users = response;
-            } else if (response?.data && Array.isArray(response.data)) {
-                users = response.data;
-            } else if (response?.users && Array.isArray(response.users)) {
-                users = response.users;
-            } else if (response && typeof response === 'object') {
-                const arrayProp = Object.values(response).find(val => Array.isArray(val));
-                if (arrayProp) {
-                    users = arrayProp as User[];
+            try {
+
+                // The api-client was throwing "Error: Failed" because it expects all responses 
+                // to have a success: true property, but /admin/users returns the users array
+                //  directly.With direct fetch, you should now see the actual data.
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}/admin/users`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-            }
-            
-            if (!Array.isArray(users)) {
-                console.warn('Unexpected response format:', response);
+
+                const users: User[] = await response.json();
+                
+                const merchants = users.filter((user: User) => {
+                    const role = user.role?.toLowerCase();
+                    return role === 'merchant'
+                });
+                return merchants;
+            } catch (error: any) {
+                console.error('Error fetching merchants:', error);
                 return [];
             }
-            
-            const merchants = users.filter((user: User) => {
-                const role = user.role?.toLowerCase();
-                return role === 'merchant' || role === 'user' || !role;
-            });
-            
-            return merchants;
         },
         enabled: !!token,
         retry: 1,
