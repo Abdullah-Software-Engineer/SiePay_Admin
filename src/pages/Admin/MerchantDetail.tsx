@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit2, Save, X, Power, Users, DollarSign, Calendar } from 'lucide-react';
 import type { MerchantType, MerchantUpdateType } from '../../types';

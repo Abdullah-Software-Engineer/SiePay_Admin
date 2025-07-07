@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useState, useEffect, useRef, type Key } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   dashboardMenuItemsOne,
   dashboardMenuItemsAdmin,

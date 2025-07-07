@@ -33,12 +33,7 @@ const mockMerchants: MerchantType[] = [
   },
 ];
 
-interface TokenOperation {
-  merchantId: string;
-  operation: 'increase' | 'decrease';
-  amount: number;
-  reason: string;
-}
+
 
 const TokenUpdate = () => {
   const [merchants, setMerchants] = useState<MerchantType[]>(mockMerchants);
