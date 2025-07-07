@@ -7,25 +7,7 @@ import GetStartedPage from "../pages/Home/page";
 import UserProfileOverview from "../pages/UserProfile/UserProfileOverview";
 import UserProfileDetails from "../pages/UserProfile/UserProfileDetails";
 import Overview from "../pages/Overview/page";
-import Payment from '../pages/Payments/page';
-import Settings from '../pages/Settings/page';
-import BusinessSettings from '../pages/Settings/Business/page';
-import Members from '../pages/Settings/Members/page';
-import PaymentSettings from '../pages/Settings/Payment/page';
-import Payout from '../pages/Settings/Payout/page';
-import BalancePage from "../pages/Balances/page";
-import SubscriptionsPage from "../pages/Subscriptions/page";
-import CustomersPage from "../pages/Customers/page";
-import ProductsPage from "../pages/Products/page";
-import InvoicePage from "../pages/Invoices/page";
-import ProductDetailsPage from "../pages/Invoices/ProductDetails";
 import ProtectedRoute from "../components/ProtectedRoute";
-import Token from "../pages/Token/page";
-import TokenDetail from "../pages/Token/TokenDetail";
-import Address from "../pages/Address/page";
-import AddressDetail from "../pages/Address/AddressDetail";
-import ProductDetails from "../pages/Products/ProductDetails";
-import ProductInvoiceDetails from "../pages/Products/ProductInvoiceDetails";
 // Admin pages
 import MerchantList from "../pages/Admin/MerchantList";
 import MerchantDetail from "../pages/Admin/MerchantDetail";
@@ -57,84 +39,7 @@ const router = createBrowserRouter([
         path: "overview",
         element: <Overview />,
       },
-      {
-        path: "payments",
-        element: <Payment />,
-      },
-      {
-        path: "balances",
-        element: <BalancePage />,
-      },
-      {
-        path: "invoices",
-        element: <InvoicePage />
-      },
-      {
-        path: "invoices/:id",
-        element: <ProductDetailsPage />
-      },
-      {
-        path: "customers",
-        element: <CustomersPage />,
-      },
-      {
-        path: "subscriptions",
-        element: <SubscriptionsPage />,
-      },
-      {
-        path: "products",
-        element: <ProductsPage />,
-      },
-      {
-        path: "products/:productId",
-        element: <ProductDetails />,
-      },
-      {
-        path: "product/invoice/:invoiceId",
-        element: <ProductInvoiceDetails />,
-      },
-      {
-        path: "address",
-        element: <Address />,
-      },
-      {
-        path: "address/:addressId",
-        element: <AddressDetail />,
-      },
-      {
-        path: "token",
-        element: <Token />,
-      },
-      {
-        path: "token/:tokenId",
-        element: <TokenDetail />,
-      },
-      {
-        path: "settings",
-        element: <Settings />,
-        children: [
-          {
-            index: true,
-            element: <Navigate to="business" replace />,
-          },
-          {
-            path: "business",
-            element: <BusinessSettings />,
-          },
-          {
-            path: "members",
-            element: <Members />,
-          },
-          {
-            path: "payment",
-            element: <PaymentSettings />,
-          },
-          {
-            path: "payout",
-            element: <Payout />,
-          },
-        ],
-      },
+      
       {
         path: "integration",
         element: <div>Integration Page</div>,

@@ -1,9 +1,7 @@
 import { NavLink } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type Key } from "react";
 import {
   dashboardMenuItemsOne,
-  dashboardMenuItemsThree,
-  dashboardMenuItemsTwo,
   dashboardMenuItemsAdmin,
 } from "../../constants/dashboard-sidebar-menuitem";
 import { cn } from "../../lib/utils";
@@ -221,35 +219,8 @@ const SideBar = ({ onClose, isDisabled = false }: SideBarProps) => {
           </div>
         </SidebarCard>
 
-        {/* second card */}
-        <SidebarCard>
-          <div className="flex flex-col px-4">
-            <nav>
-              <ul className="space-y-2 font-dashboardmenu">
-                {dashboardMenuItemsTwo.map((link) => (
-                  <li key={link.link}>
-                    {renderMenuItem(link)}
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        </SidebarCard>
-        
-        {/* third card */}
-        <SidebarCard variant="green">
-          <div className="flex flex-col px-4">
-            <nav>
-              <ul className="space-y-2 font-dashboardmenu">
-                {dashboardMenuItemsThree.map((link) => (
-                  <li key={link.link}>
-                    {renderMenuItem(link, true)}
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        </SidebarCard>
+       
+      
 
         {/* Admin menu card - only show for admin users */}
         {isAdmin && (
