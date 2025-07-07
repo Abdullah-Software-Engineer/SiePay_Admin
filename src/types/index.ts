@@ -4,6 +4,9 @@ export type User = {
   username: string;
   status?: boolean;
   role?: string; // 'admin' | 'merchant'
+  flow?: "master" | "forwarder";
+  createdAt?: string;
+  name?: string;
 };
 
 export type SignupFormBaseValues = {
@@ -110,16 +113,13 @@ export type TransactionType = {
   status: boolean;
 };
 
-// Merchant management types for admin
-export type MerchantType = {
-  _id: string;
-  email: string;
-  username: string;
-  status: boolean;
-  flow: "master" | "forward";
-  createdAt: string;
+// Merchant management types for admin - extending User since merchants are users
+export type MerchantType = User & {
   stores?: StoreType[];
   totalTokens?: number;
+  totalStores?: number;
+  totalAddresses?: number;
+  totalOpenInvoices?: number;
 };
 
 export type MerchantUpdateType = {

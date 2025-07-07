@@ -1,42 +1,43 @@
 import React, { useState } from 'react';
 import { Search, Plus, Minus, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
-import type { MerchantType } from '../../types';
+import type { User } from '../../types';
 
 // Mock data - replace with actual API call
-const mockMerchants: MerchantType[] = [
+const mockMerchants: User[] = [
   {
     _id: '1',
     email: 'merchant1@example.com',
     username: 'TechStore',
+    name: 'Tech Store Owner',
     status: true,
+    role: 'merchant',
     flow: 'master',
-    createdAt: '2024-01-15',
-    totalTokens: 10000,
+    createdAt: '2024-01-15T00:00:00.000Z',
   },
   {
     _id: '2',
     email: 'merchant2@example.com',
     username: 'ShopEasy',
+    name: 'Shop Easy Owner',
     status: false,
-    flow: 'forward',
-    createdAt: '2024-01-20',
-    totalTokens: 5000,
+    role: 'merchant',
+    flow: 'forwarder',
+    createdAt: '2024-01-20T00:00:00.000Z',
   },
   {
     _id: '3',
     email: 'merchant3@example.com',
     username: 'DigitalMart',
+    name: 'Digital Mart Owner',
     status: true,
+    role: 'merchant',
     flow: 'master',
-    createdAt: '2024-02-01',
-    totalTokens: 15000,
+    createdAt: '2024-02-01T00:00:00.000Z',
   },
 ];
 
-
-
 const TokenUpdate = () => {
-  const [merchants, setMerchants] = useState<MerchantType[]>(mockMerchants);
+  const [merchants, setMerchants] = useState<User[]>(mockMerchants);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMerchant, setSelectedMerchant] = useState<string>('');
   const [operation, setOperation] = useState<'increase' | 'decrease'>('increase');
