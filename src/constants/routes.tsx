@@ -31,6 +31,7 @@ const FullRoutePath = {
   // Admin routes
   ADMIN_MERCHANTS: "/dashboard/admin/merchants",
   ADMIN_MERCHANT_DETAIL: "/dashboard/admin/merchants/:id",
+  ADMIN_TOKENS: "/dashboard/admin/tokens",
   ADMIN_TOKEN_UPDATE: "/dashboard/admin/token-update",
 };
 

@@ -83,7 +83,7 @@ export type TokenType = {
   address: string;
   name: string;
   symbol: string;
-  decimal: number;
+  decimals: number;
   chainId: string;
   _id: string;
 };

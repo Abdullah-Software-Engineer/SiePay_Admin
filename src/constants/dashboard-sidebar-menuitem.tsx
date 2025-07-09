@@ -24,6 +24,12 @@ export const dashboardMenuItemsAdmin = [
     onSelect: () => {},
   },
   {
+    Icon: "/assets/icons/icon_4.svg",
+    title: "Token List",
+    link: FullRoutePath.ADMIN_TOKENS,
+    onSelect: () => {},
+  },
+  {
     Icon: "/assets/icons/icon_6.svg",
     title: "Token Update",
     link: FullRoutePath.ADMIN_TOKEN_UPDATE,

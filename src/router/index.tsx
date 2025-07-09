@@ -12,6 +12,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import MerchantList from "../pages/Admin/MerchantList";
 import MerchantDetail from "../pages/Admin/MerchantDetail";
 import TokenUpdate from "../pages/Admin/TokenUpdate";
+import TokenList from "../pages/Admin/TokenList";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
       {
         path: "admin/merchants/:id",
         element: <MerchantDetail />,
+      },
+      {
+        path: "admin/tokens",
+        element: <TokenList />,
       },
       {
         path: "admin/token-update",
