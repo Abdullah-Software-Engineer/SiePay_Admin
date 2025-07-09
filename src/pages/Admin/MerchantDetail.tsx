@@ -1,32 +1,94 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Calendar, Shield, Settings, Store } from 'lucide-react';
-import type { User as UserType } from '../../types';
-
-// Mock data updated to reflect real user structure
-const mockMerchant: UserType = {
-  _id: '1',
-  email: 'merchant1@example.com',
-  username: 'TechStore',
-  name: 'Tech Store Owner',
-  status: true,
-  role: 'merchant',
-  flow: 'master',
-  createdAt: '2024-01-15T00:00:00.000Z',
-  totalTokens: 5000,
-};
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, User, Mail, Calendar, Shield, Settings, Store, AlertCircle } from 'lucide-react';
+import { useGetMerchant } from '../../api/queries/useGetMerchant';
+import { useUpdateMerchant } from '../../api/mutations/useUpdateMerchant';
+import { useUpdateMerchantFlow } from '../../api/mutations/useUpdateMerchantFlow';
+import toast from 'react-hot-toast';
 
 const MerchantDetail = () => {
   const navigate = useNavigate();
-  const [merchant, setMerchant] = useState<UserType>(mockMerchant);
+  const { id } = useParams<{ id: string }>();
+  const { data: merchant, isLoading, error } = useGetMerchant(id || '');
+  const updateMerchantMutation = useUpdateMerchant();
+  const updateMerchantFlowMutation = useUpdateMerchantFlow();
 
-  const handleUpdateStatus = () => {
-    setMerchant(prev => ({ ...prev, status: !prev.status }));
+  const handleUpdateStatus = async () => {
+    if (!merchant || !id) return;
+    
+    try {
+      await updateMerchantMutation.mutateAsync({
+        merchantId: id,
+        status: !merchant.status
+      });
+      toast.success('Merchant status updated successfully');
+    } catch (error) {
+      toast.error('Failed to update merchant status');
+      console.error('Status update error:', error);
+    }
   };
 
-  const handleUpdateFlow = (newFlow: 'master' | 'forwarder') => {
-    setMerchant(prev => ({ ...prev, flow: newFlow }));
+  const handleUpdateFlow = async (newFlow: 'master' | 'forwarder') => {
+    if (!merchant || !id) return;
+    
+    // Check if merchant already has a flow set
+    if (merchant.flow) {
+      toast.error('Flow is already set and cannot be changed');
+      return;
+    }
+    
+    try {
+      await updateMerchantFlowMutation.mutateAsync({
+        merchantId: id,
+        flow: newFlow
+      });
+      toast.success('Merchant flow updated successfully');
+    } catch (error: any) {
+      const errorMessage = error?.message || 'Failed to update merchant flow';
+      toast.error(errorMessage);
+      console.error('Flow update error:', error);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/2 mb-6"></div>
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !merchant) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
+              <p className="text-gray-600">Failed to load merchant details</p>
+              <button
+                onClick={() => navigate('/dashboard/admin/merchants')}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Back to Merchants
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -158,12 +220,13 @@ const MerchantDetail = () => {
               </div>
               <button
                 onClick={handleUpdateStatus}
+                disabled={updateMerchantMutation.isPending}
                 className={`px-4 py-2 text-sm font-medium rounded-lg ${merchant.status
-                    ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                    : 'bg-green-100 text-green-700 hover:bg-green-200'
+                    ? 'bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50'
+                    : 'bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-50'
                   }`}
               >
-                {merchant.status ? 'Deactivate' : 'Activate'}
+                {updateMerchantMutation.isPending ? 'Updating...' : (merchant.status ? 'Deactivate' : 'Activate')}
               </button>
             </div>
 
@@ -173,25 +236,31 @@ const MerchantDetail = () => {
                 <p className="text-sm text-gray-500">
                   Current flow: {merchant.flow ? merchant.flow.charAt(0).toUpperCase() + merchant.flow.slice(1) : 'Not set'}
                 </p>
+                {merchant.flow && (
+                  <div className="flex items-center mt-2 text-amber-600 text-sm">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    <span>Flow is already set and cannot be changed</span>
+                  </div>
+                )}
               </div>
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleUpdateFlow('master')}
+                  disabled={updateMerchantFlowMutation.isPending || !!merchant.flow}
                   className={`px-3 py-1 text-sm font-medium rounded ${merchant.flow === 'master'
                       ? 'bg-blue-100 text-blue-700'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
                     }`}
-                  disabled={merchant.flow === 'master'}
                 >
                   Master
                 </button>
                 <button
                   onClick={() => handleUpdateFlow('forwarder')}
+                  disabled={updateMerchantFlowMutation.isPending || !!merchant.flow}
                   className={`px-3 py-1 text-sm font-medium rounded ${merchant.flow === 'forwarder'
                       ? 'bg-yellow-100 text-yellow-700'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
                     }`}
-                  disabled={merchant.flow === 'forwarder'}
                 >
                   Forwarder
                 </button>

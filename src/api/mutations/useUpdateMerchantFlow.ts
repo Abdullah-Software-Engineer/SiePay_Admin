@@ -1,27 +1,27 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../hook/useAuth";
 
-interface UpdateMerchantParams {
+interface UpdateMerchantFlowParams {
   merchantId: string;
-  status: boolean;
+  flow: "master" | "forwarder";
 }
 
-export const useUpdateMerchant = () => {
+export const useUpdateMerchantFlow = () => {
   const queryClient = useQueryClient();
   const { token } = useAuth();
 
   return useMutation({
-    mutationFn: async ({ merchantId, status }: UpdateMerchantParams) => {
-      console.log('Updating merchant status:', { merchantId, status });
+    mutationFn: async ({ merchantId, flow }: UpdateMerchantFlowParams) => {
+      console.log('Updating merchant flow:', { merchantId, flow });
       
       try {
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/admin/merchants/${merchantId}/status`, {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/admin/merchants/${merchantId}/flow`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ flow }),
         });
 
         if (!response.ok) {
@@ -29,26 +29,27 @@ export const useUpdateMerchant = () => {
         }
 
         const result = await response.json();
-        console.log('Update response:', result);
+        console.log('Flow update response:', result);
         
         if (!result.success) {
-          throw new Error(result.msg || 'Failed to update merchant status');
+          throw new Error(result.msg || 'Failed to update merchant flow');
         }
         
         return result;
       } catch (error: any) {
-        console.error('Error updating merchant status:', error);
+        console.error('Error updating merchant flow:', error);
         throw error;
       }
     },
     onSuccess: (data, variables) => {
-      console.log('Mutation successful:', data, variables);
+      console.log('Flow update successful:', data, variables);
       // Invalidate and refetch merchant data
       queryClient.invalidateQueries({ queryKey: ["merchants"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["merchant", variables.merchantId] });
     },
     onError: (error, variables) => {
-      console.error('Mutation error:', error, variables);
+      console.error('Flow update error:', error, variables);
     },
   });
-};
+}; 
